@@ -13,6 +13,9 @@
 typedef struct num {
     int n;
     std::vector<int> idx;
+    bool operator<(const num& other) const {
+        return n < other.n;
+    }
 } num;
 
 class PmergeMe {

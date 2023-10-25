@@ -45,6 +45,16 @@ void print( std::vector<num> &g )
     }
 }
 
+void    printVecpairs( std::vector<std::pair<num, num> > &g )
+{
+    std::vector<std::pair<num, num> >::iterator it = g.begin();
+    for ( ; it != g.end() ; it++ )
+    {
+        std::cout << "[" << it->first.n << ", " << it->second.n << "]";
+    }
+    std::cout << std::endl;
+}
+
 void    PmergeMe::parseFill( int ac, char **av )
 {
     int j = ac;
@@ -69,17 +79,28 @@ void    PmergeMe::parseFill( int ac, char **av )
         //     fillList( n1, n2 );
         d++;
     }
-    if ( ac % 2 != 0 ) {
+    num g;
+    if ( ac % 2 != 0 )
+    {
         parsInt( av[ac] );
-        num g;
         g.n = std::stoi( av[ac] );
-        g.idx.push_back( ac / 2 );
-        save.push_back(g);
+        // g.idx.push_back( ac / 2 );
         // last = std::stoi( av[ac] ); 
-        }
+    }
+    else
+    {
+        g.n = -1;
+    }
+
     // else
     //     last = -1;
     fordVec(myVec);
+    if ( g.n != -1 )
+    {
+        std::vector<num>::iterator u = std::lower_bound( finalVec.begin(), finalVec.end(), g );
+        finalVec.insert(u, g);
+    }
+    print(finalVec);
     // recurse retour 
 }
 
@@ -98,11 +119,12 @@ PmergeMe &PmergeMe::operator= ( PmergeMe &src )
 /*  Vector   */
 void    PmergeMe::fordVec ( std::vector<num> &vec )
 {
-    print( vec );
+    // print( vec );
     // (void)vec;
     // print(vec);
     if(vec.size() == 1)
     {
+        vec[0].idx.pop_back();
         finalVec.push_back(vec[0]);
         return;
     }
@@ -134,13 +156,46 @@ void    PmergeMe::fordVec ( std::vector<num> &vec )
         //if(d == i / 2)
         d = i / 2 - d;
     }
+    num last;
     if ( vec.size() % 2 != 0 )
-        save.push_back( vec[vec.size() - 1] );
+    {
+        last = vec[vec.size() - 1];
+        last.idx.pop_back();
+    }
+    else
+    {
+        last.n = -1;
+    }
+    std::cout << "last n : " << last.n <<  std::endl;
+        // save.push_back( vec[vec.size() - 1] );
     std::cout << "***********************************************************************************" << std::endl;
     fordVec(big);
-    std::cout << "seving : " << std::endl;
-    print(save);
+    printVecpairs(vecPairs);
+    // size_t s = ;
+    for ( size_t i = 0 ; i < finalVec.size() ; i+=2 )
+    {
+        num ins;
+        // size_t s = finalVec[i].idx.size();
+        ins = vecPairs[finalVec[i].idx.back()].second; // problem in indexation of finalVec since it changes 
+        // std::cout << "| | | | | | |" <<  << std::endl;
+        ins.idx.pop_back();
+        finalVec[i].idx.pop_back();
+        std::vector<num>::iterator up = std::lower_bound( finalVec.begin(), finalVec.begin() + i, ins );
+        finalVec.insert(up, ins);
+    }
+    if ( last.n != -1 )
+    {
+        std::vector<num>::iterator u = std::lower_bound( finalVec.begin(), finalVec.end(), last );
+        finalVec.insert(u, last);
+    }
+    std::cout << "&&&&&&&&&& start final Vec &&&&&&&&&&" << std::endl;
+    print(finalVec);
+    std::cout << "&&&&&&&&&&& end final vec &&&&&&&&&" << std::endl;
+    // std::cout << "seving : " << std::endl;
+    // print(save);
     // start inserting in vecFinal 
+    // 1- the save must be ghir a num and each recurse will save its num
+    // 2- lower bound 3tiha lbegin  til the idx of its pair ,
 }
 
 /*   List   */
